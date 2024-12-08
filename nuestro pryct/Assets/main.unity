@@ -119,6 +119,60 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &39948916
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 39948918}
+  - component: {fileID: 39948917}
+  m_Layer: 0
+  m_Name: ChunkManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &39948917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39948916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef678875e2b7cf24fa15986b525c825c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chanceOfTrees: 10
+  chanceOfRocks: 5
+  chanceOfWater: 2
+  tilePrefab: {fileID: 5986345449308287462, guid: 08d3a6edc3a4e4b4a9628df3b1bb9006, type: 3}
+  treePrefab: {fileID: 7696012434658893163, guid: 49edd2803e3636f42851ff988bdc22f8, type: 3}
+  rockPrefab: {fileID: 8428278292417917439, guid: 3dcefacd29efc334a815e9d3702ae289, type: 3}
+  lakePrefab: {fileID: 2354491698408295843, guid: 4eef242d6e7930647a70f76a7ff421db, type: 3}
+  player: {fileID: 1914297816}
+  chunkSize: 9
+  visibleChunks: 5
+--- !u!4 &39948918
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39948916}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.1441596, y: 0.99341613, z: 0.019256422}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &100453070
 GameObject:
   m_ObjectHideFlags: 0
@@ -807,7 +861,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 00000000951c6a8d9104424f
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -2324,3 +2378,4 @@ SceneRoots:
   - {fileID: 1914297816}
   - {fileID: 795959846}
   - {fileID: 1047926501}
+  - {fileID: 39948918}
