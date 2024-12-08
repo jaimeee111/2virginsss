@@ -1,16 +1,16 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement2D : MonoBehaviour
 {
     public float moveSpeed = 5f; // Velocidad de movimiento
-    private Rigidbody2D rb;
+    private Rigidbody rb;
     private Vector2 movement;
 
     void Awake()
     {
         // Obtiene el componente Rigidbody2D
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
