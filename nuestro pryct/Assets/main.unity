@@ -647,8 +647,9 @@ GameObject:
   - component: {fileID: 1033965295}
   - component: {fileID: 1033965294}
   - component: {fileID: 1033965296}
-  m_Layer: 0
-  m_Name: Triangle
+  - component: {fileID: 1033965297}
+  m_Layer: 6
+  m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -770,6 +771,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1033965297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033965293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b7ab31fad3a5da4fb2e3deede5b013c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 10
 --- !u!1 &1203947115
 GameObject:
   m_ObjectHideFlags: 0
@@ -1155,12 +1169,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1921770446}
   - component: {fileID: 1921770445}
-  - component: {fileID: 1921770447}
   - component: {fileID: 1921770450}
   - component: {fileID: 1921770449}
   - component: {fileID: 1921770448}
+  - component: {fileID: 1921770451}
   m_Layer: 0
-  m_Name: Player
+  m_Name: player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1237,26 +1251,6 @@ Transform:
   - {fileID: 1447242211}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1921770447
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1921770442}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04afee8e1cc2b8c418d9468df07ada71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  maxWater: 100
-  maxFood: 100
-  healthBar: {fileID: 113385670}
-  waterBar: {fileID: 0}
-  foodBar: {fileID: 0}
-  damageTag: Enemy
-  damageAmount: 10
 --- !u!50 &1921770448
 Rigidbody2D:
   serializedVersion: 5
@@ -1281,8 +1275,8 @@ Rigidbody2D:
     serializedVersion: 2
     m_Bits: 0
   m_Interpolate: 0
-  m_SleepingMode: 0
-  m_CollisionDetection: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!114 &1921770449
 MonoBehaviour:
@@ -1343,6 +1337,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1921770451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921770442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04afee8e1cc2b8c418d9468df07ada71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  healthBar: {fileID: 113385670}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
