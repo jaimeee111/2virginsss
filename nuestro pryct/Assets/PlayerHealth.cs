@@ -90,9 +90,8 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("El personaje ha muerto.");
-        // Aquí puedes añadir lógica como reiniciar el nivel o mostrar un mensaje de Game Over
-        Destroy(gameObject);
+        Debug.Log("El personaje ha sido deshabilitado.");
+        gameObject.SetActive(false); // Desactiva el GameObject en lugar de destruirlo
     }
 
     void OnTriggerEnter(Collider other)
@@ -104,9 +103,6 @@ public class PlayerHealth : MonoBehaviour
             Debug.Log($"Trigger detectado con: {other.gameObject.name}, daño recibido: {damageDealer.damage}");
             TakeDamage(damageDealer.damage);
         }
-
-       
-
     }
 
     public void RecoverWater(float amount)
@@ -124,6 +120,4 @@ public class PlayerHealth : MonoBehaviour
         UpdateUI();
         Debug.Log($"Comida recuperada: {amount}. Comida actual: {currentFood}");
     }
-
-
 }

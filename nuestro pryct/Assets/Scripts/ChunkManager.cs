@@ -248,15 +248,29 @@ void InstantiateDecoration(Vector3 position, string decorationType, Chunk chunk)
 
     if (prefab != null)
     {
-        GameObject decoration = Instantiate(prefab, position + new Vector3(0, 0, -0.1f), Quaternion.identity);
+                GameObject decoration = Instantiate(prefab, position + new Vector3(0, 0, -0.1f), Quaternion.identity);
 
-        // Configurar sorting order para simular profundidad
-        SpriteRenderer renderer = decoration.GetComponent<SpriteRenderer>();
-        var collisionScript = decoration.GetComponent<DecorationCollision>();
-        if (collisionScript != null)
-        {
-            collisionScript.isPassable = (decorationType != "Rock"); // Example: only rocks are impassable
-        }
+                // Configurar sorting order para simular profundidad
+                SpriteRenderer renderer = decoration.GetComponent<SpriteRenderer>();
+                var collisionScript = decoration.GetComponent<DecorationCollision>();
+                if (collisionScript != null)
+                {
+                    // Configurar isPassable según el tipo de decoración
+                    if (decorationType == "Rock")
+                    {
+                        collisionScript.isPassable = false; // Las rocas no se pueden atravesar
+                    }
+                    else if (decorationType == "Tree")
+                    {
+                        collisionScript.isPassable = false; // Los árboles tampoco se pueden atravesar
+                    }
+                    else
+                    {
+                        collisionScript.isPassable = true; // Otros objetos son atravesables
+                    }
+                }
+
+
         if (renderer != null)
         {
             // Caso 1: Árboles con profundidad
