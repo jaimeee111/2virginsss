@@ -1,141 +1,117 @@
 using System.Linq;
 using UnityEngine;
-using System.Collections.Generic; // Needed for Lists and Dictionaries
+using System.Collections.Generic;
 
 public class ChunkManager : MonoBehaviour
 {
+    [Header("Probabilidades de decoración (porcentaje)")]
+    [Range(0, 100)] public float chanceOfTrees = 10; // Porcentaje de árboles (10%)
+    [Range(0, 100)] public float chanceOfRocks = 5;  // Porcentaje de rocas (5%)
+    [Range(0, 100)] public float chanceOfWater = 2;  // Porcentaje de agua (2%)
 
-     [Range(0, 100)] // Esto limita los valores en el editor entre 0 y 100
-    public float chanceOfTrees = 10; // Porcentaje de árboles (10%)
-    [Range(0, 100)]
-    public float chanceOfRocks = 5;  // Porcentaje de rocas (5%)
-    [Range(0, 100)]
-    public float chanceOfWater = 2;  // Porcentaje de agua (2%)
+    [Header("Distancias mínimas")]
+    public float minDistanceBetweenDecorations = 1.0f; // Mínima entre decoraciones generales
+    public float minDistanceForLakes = 1.5f;           // Mínima para lagos
+    public float minLakeToTreeOrRock = 2.0f;           // Lago respecto a árboles/rocas
 
-    // Valores normalizados para cálculos internos
+    [Header("Prefabs y configuración")]
+    public GameObject tilePrefab;
+    public GameObject treePrefab;
+    public GameObject rockPrefab;
+    public GameObject lakePrefab;
+    public Transform player;
+
+    [Header("Chunk Settings")]
+    public int chunkSize = 10;
+    public int visibleChunks = 2;
+
     private float normalizedChanceOfTrees;
     private float normalizedChanceOfRocks;
     private float normalizedChanceOfWater;
 
-    //The different spawnnable sprites
-    public GameObject tilePrefab;   // The basic ground prefab
-    public GameObject treePrefab;  // Tree prefab
-    public GameObject rockPrefab;  // Rock prefab
-    public GameObject lakePrefab;  // Lake prefab
-
-    public Transform player;       // Reference to the player
-
-    public int chunkSize = 10;     // Size of a chunk in tiles
-    public int visibleChunks = 2;  // Number of chunks around the player
-
-    private Dictionary<Vector2, Chunk> activeChunks = new Dictionary<Vector2, Chunk>(); // Active chunks
-    private HashSet<Vector2> loadedChunks = new HashSet<Vector2>(); // To track already-loaded chunks
+    private Dictionary<Vector2, Chunk> activeChunks = new Dictionary<Vector2, Chunk>();
+    private HashSet<Vector2> loadedChunks = new HashSet<Vector2>();
 
     private Vector2 GetChunkCoord(Vector3 position)
-{
-    return new Vector2(
-        Mathf.Floor(position.x / chunkSize),
-        Mathf.Floor(position.y / chunkSize)
-    );
-}
-
-public class Chunk
-{
-    public Vector2 ChunkCoord; // Chunk coordinate
-    public List<GameObject> Tiles = new List<GameObject>(); // Tiles in the chunk
-    public List<DecorationData> DecorationData = new List<DecorationData>(); // Decorations in the chunk
-    public List<GameObject> Decorations = new List<GameObject>(); // Active decorations in the chunk
-
-    // Helper method to count decorations by type
-    public int CountDecorationType(string type)
     {
-        return DecorationData.Count(data => data.Type == type);
+        return new Vector2(
+            Mathf.Floor(position.x / chunkSize),
+            Mathf.Floor(position.y / chunkSize)
+        );
     }
-}
 
-public class DecorationData
-{
-    public Vector3 Position;
-    public string Type;
-}
-
-void Start()
+    public class Chunk
     {
-        // Convertimos los valores de porcentaje en números entre 0 y 1
+        public Vector2 ChunkCoord;
+        public List<GameObject> Tiles = new List<GameObject>();
+        public List<DecorationData> DecorationData = new List<DecorationData>();
+        public List<GameObject> Decorations = new List<GameObject>();
+
+        public int CountDecorationType(string type)
+        {
+            return DecorationData.Count(data => data.Type == type);
+        }
+    }
+
+    public class DecorationData
+    {
+        public Vector3 Position;
+        public string Type;
+    }
+
+    void Start()
+    {
         normalizedChanceOfTrees = chanceOfTrees / 100f;
         normalizedChanceOfRocks = chanceOfRocks / 100f;
         normalizedChanceOfWater = chanceOfWater / 100f;
     }
 
-
     void Update()
-{
-    Vector2 playerChunk = GetChunkCoord(player.position);
-
-    // Load all chunks within the visible range
-    for (int x = -visibleChunks; x <= visibleChunks; x++)
     {
-        for (int y = -visibleChunks; y <= visibleChunks; y++)
+        Vector2 playerChunk = GetChunkCoord(player.position);
+
+        for (int x = -visibleChunks; x <= visibleChunks; x++)
         {
-            Vector2 chunkCoord = new Vector2(playerChunk.x + x, playerChunk.y + y);
-            if (!loadedChunks.Contains(chunkCoord))
+            for (int y = -visibleChunks; y <= visibleChunks; y++)
             {
-                LoadChunk(chunkCoord);
+                Vector2 chunkCoord = new Vector2(playerChunk.x + x, playerChunk.y + y);
+                if (!loadedChunks.Contains(chunkCoord))
+                {
+                    LoadChunk(chunkCoord);
+                }
+            }
+        }
+
+        foreach (var chunkCoord in new List<Vector2>(loadedChunks))
+        {
+            if (Mathf.Abs(chunkCoord.x - playerChunk.x) > visibleChunks ||
+                Mathf.Abs(chunkCoord.y - playerChunk.y) > visibleChunks)
+            {
+                UnloadChunk(chunkCoord);
             }
         }
     }
 
-    // Unload chunks outside the visible range
-    foreach (var chunkCoord in new List<Vector2>(loadedChunks))
-    {
-        if (Mathf.Abs(chunkCoord.x - playerChunk.x) > visibleChunks ||
-            Mathf.Abs(chunkCoord.y - playerChunk.y) > visibleChunks)
-        {
-            UnloadChunk(chunkCoord);
-        }
-    }
-
     void LoadChunk(Vector2 chunkCoord)
-{
-    if (loadedChunks.Contains(chunkCoord)) return;
-
-    Chunk newChunk;
-
-    if (activeChunks.TryGetValue(chunkCoord, out newChunk))
     {
-        // Log details about the decorations in the chunk
-        Debug.Log($"Restoring chunk at {chunkCoord}");
-        Debug.Log($"Trees: {newChunk.CountDecorationType("Tree")}, Rocks: {newChunk.CountDecorationType("Rock")}, Lakes: {newChunk.CountDecorationType("Lake")}");
-    }
-    else
-    {
-        newChunk = new Chunk { ChunkCoord = chunkCoord };
-        Debug.Log($"Generating new chunk at {chunkCoord}");
-    }
+        if (loadedChunks.Contains(chunkCoord)) return;
 
-    Vector3 chunkWorldPos = new Vector3(chunkCoord.x * chunkSize, chunkCoord.y * chunkSize, 0);
+        Chunk newChunk = new Chunk { ChunkCoord = chunkCoord };
 
-    // Generate tiles
-    for (int x = 0; x < chunkSize; x++)
-    {
-        for (int y = 0; y < chunkSize; y++)
+        Vector3 chunkWorldPos = new Vector3(chunkCoord.x * chunkSize, chunkCoord.y * chunkSize, 0);
+
+        // Crear tiles
+        for (int x = 0; x < chunkSize; x++)
         {
-            Vector3 tilePos = chunkWorldPos + new Vector3(x, y, 0);
-            GameObject tile = Instantiate(tilePrefab, tilePos, Quaternion.identity);
-            newChunk.Tiles.Add(tile);
+            for (int y = 0; y < chunkSize; y++)
+            {
+                Vector3 tilePos = chunkWorldPos + new Vector3(x, y, 0);
+                GameObject tile = Instantiate(tilePrefab, tilePos, Quaternion.identity);
+                newChunk.Tiles.Add(tile);
+            }
         }
-    }
 
-    // Restore or generate decorations
-    if (newChunk.DecorationData.Count > 0)
-    {
-        foreach (var data in newChunk.DecorationData)
-        {
-            InstantiateDecoration(data.Position, data.Type, newChunk);
-        }
-    }
-    else
-    {
+        // Crear decoraciones
         for (int x = 0; x < chunkSize; x++)
         {
             for (int y = 0; y < chunkSize; y++)
@@ -144,157 +120,110 @@ void Start()
                 GenerateDecoration(tilePos, newChunk);
             }
         }
+
+        activeChunks[chunkCoord] = newChunk;
+        loadedChunks.Add(chunkCoord);
     }
-
-    activeChunks[chunkCoord] = newChunk;
-    loadedChunks.Add(chunkCoord);
-}
-
 
     void UnloadChunk(Vector2 chunkCoord)
-{
-    if (!loadedChunks.Contains(chunkCoord)) return;
-
-    if (activeChunks.TryGetValue(chunkCoord, out Chunk chunk))
     {
-        // Destroy all tile GameObjects
-        foreach (GameObject tile in chunk.Tiles)
+        if (!loadedChunks.Contains(chunkCoord)) return;
+
+        if (activeChunks.TryGetValue(chunkCoord, out Chunk chunk))
         {
-            Destroy(tile);
+            foreach (GameObject tile in chunk.Tiles)
+            {
+                Destroy(tile);
+            }
+
+            foreach (GameObject decoration in chunk.Decorations)
+            {
+                Destroy(decoration);
+            }
+
+            chunk.Tiles.Clear();
+            chunk.Decorations.Clear();
+
+            activeChunks.Remove(chunkCoord);
         }
 
-        // Destroy all decoration GameObjects
-        foreach (GameObject decoration in chunk.Decorations)
-        {
-            Destroy(decoration);
-        }
-
-        // Keep decoration data intact but clear the GameObject references
-        chunk.Tiles.Clear();
-        chunk.Decorations.Clear();
-
-        activeChunks.Remove(chunkCoord);
+        loadedChunks.Remove(chunkCoord);
     }
 
-    loadedChunks.Remove(chunkCoord);
-}
-
-void GenerateDecoration(Vector3 position, Chunk chunk)
+    void GenerateDecoration(Vector3 position, Chunk chunk)
     {
         float chance = Random.Range(0f, 1f);
         string decorationType = null;
 
         if (chance < normalizedChanceOfWater)
         {
-            decorationType = "Lake"; // Lago
+            decorationType = "Lake";
         }
         else if (chance < normalizedChanceOfWater + normalizedChanceOfRocks)
         {
-            decorationType = "Rock"; // Roca
+            decorationType = "Rock";
         }
         else if (chance < normalizedChanceOfWater + normalizedChanceOfRocks + normalizedChanceOfTrees)
         {
-            decorationType = "Tree"; // Árbol
+            decorationType = "Tree";
         }
 
         if (decorationType != null)
-    {
-        // Asegúrate de que no haya un objeto ya en esa posición
-        if (chunk.DecorationData.Any(data => Vector3.Distance(data.Position, position) < 0.5f))
         {
-            return; // Si hay una decoración cerca, no colocamos nada aquí
-        }
+            float minDistance = decorationType == "Lake" ? minDistanceForLakes : minDistanceBetweenDecorations;
 
-        // Reglas específicas para lagos
-        if (decorationType == "Lake")
-        {
-            // Asegúrate de que no haya árboles o rocas cerca
-            if (chunk.DecorationData.Any(data => 
-                (data.Type == "Tree" || data.Type == "Rock") && 
-                Vector3.Distance(data.Position, position) < 1.5f)) // Distancia mínima
+            float prefabSize = Mathf.Max(
+                lakePrefab.GetComponent<Renderer>().bounds.extents.magnitude,
+                treePrefab.GetComponent<Renderer>().bounds.extents.magnitude
+            );
+
+            minDistance = Mathf.Max(minDistance, prefabSize);
+
+            foreach (var data in chunk.DecorationData)
             {
-                return; // Si hay árboles o rocas cerca, no colocamos el lago
-            }
-        }
-
-        // Guardar los datos de la decoración
-        chunk.DecorationData.Add(new DecorationData
-        {
-            Position = position,
-            Type = decorationType
-        });
-
-        // Instanciar la decoración
-        InstantiateDecoration(position, decorationType, chunk);
-    }
-    }
-
-void InstantiateDecoration(Vector3 position, string decorationType, Chunk chunk)
-{
-    GameObject prefab = null;
-
-    switch (decorationType)
-    {
-        case "Tree":
-            prefab = treePrefab;
-            break;
-        case "Rock":
-            prefab = rockPrefab;
-            break;
-        case "Lake":
-            prefab = lakePrefab;
-            break;
-    }
-
-    if (prefab != null)
-    {
-                GameObject decoration = Instantiate(prefab, position + new Vector3(0, 0, -0.1f), Quaternion.identity);
-
-                // Configurar sorting order para simular profundidad
-                SpriteRenderer renderer = decoration.GetComponent<SpriteRenderer>();
-                var collisionScript = decoration.GetComponent<DecorationCollision>();
-                if (collisionScript != null)
+                if (decorationType == "Lake" && (data.Type == "Tree" || data.Type == "Rock"))
                 {
-                    // Configurar isPassable según el tipo de decoración
-                    if (decorationType == "Rock")
-                    {
-                        collisionScript.isPassable = false; // Las rocas no se pueden atravesar
-                    }
-                    else if (decorationType == "Tree")
-                    {
-                        collisionScript.isPassable = false; // Los árboles tampoco se pueden atravesar
-                    }
-                    else
-                    {
-                        collisionScript.isPassable = true; // Otros objetos son atravesables
-                    }
+                    if (Vector3.Distance(data.Position, position) < minLakeToTreeOrRock)
+                        return;
                 }
+                else if (Vector3.Distance(data.Position, position) < minDistance)
+                    return;
+            }
 
+            chunk.DecorationData.Add(new DecorationData { Position = position, Type = decorationType });
+            InstantiateDecoration(position, decorationType, chunk);
+        }
+    }
 
-        if (renderer != null)
+    void InstantiateDecoration(Vector3 position, string decorationType, Chunk chunk)
+    {
+        GameObject prefab = null;
+
+        switch (decorationType)
         {
-            // Caso 1: Árboles con profundidad
-            if (decorationType == "Tree")
-            {
-                renderer.sortingOrder = Mathf.RoundToInt(-position.y * 10); // Cuanto más abajo, mayor el sortingOrder
-            }
-            // Caso 2: Rocas
-            else if (decorationType == "Rock")
-            {
-                renderer.sortingOrder = Mathf.RoundToInt(-position.y * 10 - 1); // Rocas detrás de árboles en igualdad de posición
-            }
-            // Caso 3: Lagos
-            else if (decorationType == "Lake")
-            {
-                renderer.sortingOrder = Mathf.RoundToInt(-position.y * 10 - 2); // Lagos detrás de árboles y rocas
-            }
+            case "Tree": prefab = treePrefab; break;
+            case "Rock": prefab = rockPrefab; break;
+            case "Lake": prefab = lakePrefab; break;
         }
 
-        chunk.Decorations.Add(decoration); // Agregar la decoración a la lista activa del chunk
+        if (prefab != null)
+        {
+            GameObject decoration = Instantiate(prefab, position, Quaternion.identity);
+            chunk.Decorations.Add(decoration);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (activeChunks == null) return;
+
+        foreach (var chunk in activeChunks.Values)
+        {
+            foreach (var decoration in chunk.DecorationData)
+            {
+                Gizmos.color = decoration.Type == "Lake" ? Color.blue : Color.green;
+                Gizmos.DrawWireSphere(decoration.Position, minLakeToTreeOrRock);
+            }
+        }
     }
 }
-
-}
-
-}
-

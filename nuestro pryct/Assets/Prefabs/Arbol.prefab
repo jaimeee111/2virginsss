@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 2991353192617285119}
   - component: {fileID: 2317609711450364232}
   - component: {fileID: -7759370208014412076}
-  m_Layer: 0
+  - component: {fileID: -6537664784283944161}
+  m_Layer: 7
   m_Name: Arbol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 7696012434658893163}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.9199734, y: 0.050426185, z: 0}
+  m_LocalPosition: {x: -7.074, y: 0.471, z: 0}
   m_LocalScale: {x: 0.175, y: 0.175, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -75,8 +76,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1329726609
-  m_SortingLayer: 2
+  m_SortingLayerID: 1306079777
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 1302723820812287101, guid: 66dea4614afa1824bb03da62f7aee9fa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -108,8 +109,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6.554514, y: 1.0823005, z: 1}
-  m_Center: {x: 0.50916535, y: -8.280344, z: 0}
+  m_Size: {x: 5.027019, y: 2.0314384, z: 1}
+  m_Center: {x: 0.39344242, y: 1.04147, z: 0}
 --- !u!114 &-7759370208014412076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,3 +124,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPassable: 0
+--- !u!114 &-6537664784283944161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7696012434658893163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0657bab651cc3f345af73fcb4adfb284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depthMultiplier: 100

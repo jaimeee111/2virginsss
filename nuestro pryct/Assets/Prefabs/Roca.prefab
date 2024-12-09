@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 1193530822015657297}
   - component: {fileID: 1015997633923601640}
   - component: {fileID: 4215246126041491550}
-  m_Layer: 0
+  - component: {fileID: -7554729434605407514}
+  m_Layer: 7
   m_Name: Roca
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,10 +76,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1329726609
-  m_SortingLayer: 2
+  m_SortingLayerID: 1306079777
+  m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: -3501067300523844550, guid: 2c5438db7a4b8f14499553e430785ef9, type: 3}
+  m_Sprite: {fileID: 969593291631574138, guid: 2b2450a7f6bf5a24b980be525e7bd643, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -121,5 +122,18 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 9.344145, y: 2.9287965, z: 1}
+  m_Center: {x: 0.08386135, y: 1.5304593, z: 0}
+--- !u!114 &-7554729434605407514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8428278292417917439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0657bab651cc3f345af73fcb4adfb284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depthMultiplier: 100

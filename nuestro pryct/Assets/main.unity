@@ -149,8 +149,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chanceOfTrees: 10
-  chanceOfRocks: 5
+  chanceOfRocks: 2.5
   chanceOfWater: 2
+  minDistanceBetweenDecorations: 1
+  minDistanceForLakes: 10
+  minLakeToTreeOrRock: 10
   tilePrefab: {fileID: 5986345449308287462, guid: 08d3a6edc3a4e4b4a9628df3b1bb9006, type: 3}
   treePrefab: {fileID: 7696012434658893163, guid: 49edd2803e3636f42851ff988bdc22f8, type: 3}
   rockPrefab: {fileID: 8428278292417917439, guid: 3dcefacd29efc334a815e9d3702ae289, type: 3}
@@ -167,7 +170,7 @@ Transform:
   m_GameObject: {fileID: 39948916}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.1441596, y: 0.99341613, z: 0}
+  m_LocalPosition: {x: -1.1441596, y: 0.99341613, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -183,7 +186,8 @@ GameObject:
   m_Component:
   - component: {fileID: 85320255}
   - component: {fileID: 85320256}
-  m_Layer: 0
+  - component: {fileID: 85320257}
+  m_Layer: 3
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -246,8 +250,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1329726609
-  m_SortingLayer: 2
+  m_SortingLayerID: 1306079777
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 5743588294084314291, guid: c63c46b707a533f49a2524af78f5563f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -260,6 +264,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &85320257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85320254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0657bab651cc3f345af73fcb4adfb284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depthMultiplier: 100
 --- !u!1 &100453070
 GameObject:
   m_ObjectHideFlags: 0
@@ -948,7 +965,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000951c6a8d9104424f
+  m_ApplyToSortingLayers: 00000000951c6a8d9104424f2132d94dab6cb2c6
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -2006,39 +2023,18 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1914297816}
-  - component: {fileID: 1914297813}
   - component: {fileID: 1914297819}
   - component: {fileID: 1914297818}
   - component: {fileID: 1914297817}
   - component: {fileID: 1914297820}
-  m_Layer: 0
+  - component: {fileID: 1914297821}
+  m_Layer: 3
   m_Name: palyer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!65 &1914297813
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1914297810}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.5964453, y: 0.26545846, z: 1}
-  m_Center: {x: 0, y: -0.46569878, z: 0}
 --- !u!4 &1914297816
 Transform:
   m_ObjectHideFlags: 0
@@ -2131,6 +2127,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthRegenRate: 1
+--- !u!65 &1914297821
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914297810}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.59539974, y: 0.16075629, z: 1}
+  m_Center: {x: -0.000000059604645, y: 0.098896295, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

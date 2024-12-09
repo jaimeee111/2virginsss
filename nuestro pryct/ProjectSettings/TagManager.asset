@@ -9,11 +9,11 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - Obstacle
-  - 
+  - Decoraciones
   - 
   - 
   - 
@@ -47,6 +47,12 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 1329726609
+    locked: 0
+  - name: Decorations
+    uniqueID: 1306079777
+    locked: 0
+  - name: Character
+    uniqueID: 3333581995
     locked: 0
   m_RenderingLayers:
   - Default
