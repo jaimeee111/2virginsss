@@ -5,14 +5,18 @@ using System.Collections.Generic;
 public class ChunkManager : MonoBehaviour
 {
     [Header("Probabilidades de decoración (porcentaje)")]
-    [Range(0, 100)] public float chanceOfTrees = 10; // Porcentaje de árboles (10%)
-    [Range(0, 100)] public float chanceOfRocks = 5;  // Porcentaje de rocas (5%)
-    [Range(0, 100)] public float chanceOfWater = 2;  // Porcentaje de agua (2%)
+    public float chanceOfTrees = 0.5f;  // 50% probabilidad de árbol
+    public float chanceOfRocks = 0.3f;  // 30% probabilidad de roca
+    public float chanceOfWater = 0.2f;  // 20% probabilidad de lago
 
     [Header("Distancias mínimas")]
     public float minDistanceBetweenDecorations = 1.0f; // Mínima entre decoraciones generales
     public float minDistanceForLakes = 1.5f;           // Mínima para lagos
     public float minLakeToTreeOrRock = 2.0f;           // Lago respecto a árboles/rocas
+
+    [Header("Escala de decoración")]
+    [Range(0.1f, 0.5f)] public float minScale = 0.8f; // Escala mínima
+    [Range(0.1f, 0.5f)] public float maxScale = 1.5f; // Escala máxima
 
     [Header("Prefabs y configuración")]
     public GameObject tilePrefab;
@@ -24,10 +28,6 @@ public class ChunkManager : MonoBehaviour
     [Header("Chunk Settings")]
     public int chunkSize = 10;
     public int visibleChunks = 2;
-
-    private float normalizedChanceOfTrees;
-    private float normalizedChanceOfRocks;
-    private float normalizedChanceOfWater;
 
     private Dictionary<Vector2, Chunk> activeChunks = new Dictionary<Vector2, Chunk>();
     private HashSet<Vector2> loadedChunks = new HashSet<Vector2>();
@@ -46,11 +46,6 @@ public class ChunkManager : MonoBehaviour
         public List<GameObject> Tiles = new List<GameObject>();
         public List<DecorationData> DecorationData = new List<DecorationData>();
         public List<GameObject> Decorations = new List<GameObject>();
-
-        public int CountDecorationType(string type)
-        {
-            return DecorationData.Count(data => data.Type == type);
-        }
     }
 
     public class DecorationData
@@ -61,9 +56,12 @@ public class ChunkManager : MonoBehaviour
 
     void Start()
     {
-        normalizedChanceOfTrees = chanceOfTrees / 100f;
-        normalizedChanceOfRocks = chanceOfRocks / 100f;
-        normalizedChanceOfWater = chanceOfWater / 100f;
+        // Opcional: validación de rangos
+        if (minScale > maxScale)
+        {
+            Debug.LogWarning("minScale no puede ser mayor que maxScale. Ajustando valores.");
+            minScale = maxScale;
+        }
     }
 
     void Update()
@@ -150,50 +148,62 @@ public class ChunkManager : MonoBehaviour
         loadedChunks.Remove(chunkCoord);
     }
 
+
+
     void GenerateDecoration(Vector3 position, Chunk chunk)
     {
-        float chance = Random.Range(0f, 1f);
+        float chance = Random.Range(0f, 1f); // Genera un número aleatorio entre 0 y 1
         string decorationType = null;
 
-        if (chance < normalizedChanceOfWater)
+        // Asegúrate de que las probabilidades sumen 1
+        if (chance < chanceOfTrees)
         {
-            decorationType = "Lake";
+            decorationType = "Tree"; // Genera un árbol
         }
-        else if (chance < normalizedChanceOfWater + normalizedChanceOfRocks)
+        else if (chance < chanceOfTrees + chanceOfRocks)
         {
-            decorationType = "Rock";
+            decorationType = "Rock"; // Genera una roca
         }
-        else if (chance < normalizedChanceOfWater + normalizedChanceOfRocks + normalizedChanceOfTrees)
+        else
         {
-            decorationType = "Tree";
+            decorationType = "Lake"; // Genera un lago
         }
 
         if (decorationType != null)
         {
+            // Verifica la distancia mínima (como antes)
             float minDistance = decorationType == "Lake" ? minDistanceForLakes : minDistanceBetweenDecorations;
 
-            float prefabSize = Mathf.Max(
-                lakePrefab.GetComponent<Renderer>().bounds.extents.magnitude,
-                treePrefab.GetComponent<Renderer>().bounds.extents.magnitude
-            );
-
-            minDistance = Mathf.Max(minDistance, prefabSize);
-
-            foreach (var data in chunk.DecorationData)
+            bool isTooClose = chunk.DecorationData.Any(data =>
             {
+                float distance = Vector3.Distance(data.Position, position);
+
+                // Usa distancia especial para lagos frente a otros tipos
                 if (decorationType == "Lake" && (data.Type == "Tree" || data.Type == "Rock"))
                 {
-                    if (Vector3.Distance(data.Position, position) < minLakeToTreeOrRock)
-                        return;
+                    return distance < minLakeToTreeOrRock;
                 }
-                else if (Vector3.Distance(data.Position, position) < minDistance)
-                    return;
+
+                // Distancia mínima general
+                return distance < minDistance;
+            });
+
+            if (isTooClose)
+            {
+                return; // Si está muy cerca de otra decoración, no generes nada
             }
 
-            chunk.DecorationData.Add(new DecorationData { Position = position, Type = decorationType });
+            // Si pasó todas las verificaciones, agrega la decoración
+            chunk.DecorationData.Add(new DecorationData
+            {
+                Position = position,
+                Type = decorationType
+            });
+
             InstantiateDecoration(position, decorationType, chunk);
         }
     }
+
 
     void InstantiateDecoration(Vector3 position, string decorationType, Chunk chunk)
     {
@@ -208,22 +218,13 @@ public class ChunkManager : MonoBehaviour
 
         if (prefab != null)
         {
-            GameObject decoration = Instantiate(prefab, position, Quaternion.identity);
+            GameObject decoration = Instantiate(prefab, position + new Vector3(0, 0, -0.1f), Quaternion.identity);
+
+            // Aplicar escala aleatoria
+            float randomScale = Random.Range(minScale, maxScale);
+            decoration.transform.localScale = Vector3.one * randomScale;
+
             chunk.Decorations.Add(decoration);
-        }
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (activeChunks == null) return;
-
-        foreach (var chunk in activeChunks.Values)
-        {
-            foreach (var decoration in chunk.DecorationData)
-            {
-                Gizmos.color = decoration.Type == "Lake" ? Color.blue : Color.green;
-                Gizmos.DrawWireSphere(decoration.Position, minLakeToTreeOrRock);
-            }
         }
     }
 }

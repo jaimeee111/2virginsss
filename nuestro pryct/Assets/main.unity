@@ -148,12 +148,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef678875e2b7cf24fa15986b525c825c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chanceOfTrees: 10
-  chanceOfRocks: 2.5
-  chanceOfWater: 2
-  minDistanceBetweenDecorations: 1
-  minDistanceForLakes: 10
-  minLakeToTreeOrRock: 10
+  chanceOfTrees: 0.7
+  chanceOfRocks: 0.1
+  chanceOfWater: 0.2
+  minDistanceBetweenDecorations: 2.5
+  minDistanceForLakes: 30
+  minLakeToTreeOrRock: 100
+  minScale: 0.14
+  maxScale: 0.2
   tilePrefab: {fileID: 5986345449308287462, guid: 08d3a6edc3a4e4b4a9628df3b1bb9006, type: 3}
   treePrefab: {fileID: 7696012434658893163, guid: 49edd2803e3636f42851ff988bdc22f8, type: 3}
   rockPrefab: {fileID: 8428278292417917439, guid: 3dcefacd29efc334a815e9d3702ae289, type: 3}
