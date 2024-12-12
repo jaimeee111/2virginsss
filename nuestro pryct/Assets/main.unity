@@ -153,7 +153,7 @@ MonoBehaviour:
   chanceOfWater: 0.2
   minDistanceBetweenDecorations: 2.5
   minDistanceForLakes: 30
-  minLakeToTreeOrRock: 100
+  minLakeToTreeOrRock: 10000
   minScale: 0.14
   maxScale: 0.2
   tilePrefab: {fileID: 5986345449308287462, guid: 08d3a6edc3a4e4b4a9628df3b1bb9006, type: 3}
