@@ -3,13 +3,21 @@ using UnityEngine;
 
 public class ChunkManager : MonoBehaviour
 {
-    public GameObject[] decorationPrefabs; // Prefabs para árboles, rocas, lagos, etc.
-    public GameObject groundTilePrefab; // Prefab para los tiles del suelo
+    [System.Serializable]
+    public class Decoration
+    {
+        public GameObject prefab; // Prefab de la decoración
+        public float weight; // Peso de probabilidad
+        public float minScale = 0.8f; // Escala mínima
+        public float maxScale = 1.2f; // Escala máxima
+    }
 
-    public float[] decorationWeights; // Pesos de probabilidad para decoraciones
+    public Decoration[] decorations; // Lista de decoraciones configurables
+    public GameObject groundTilePrefab; // Prefab para los tiles del suelo
     public int chunkSize = 10; // Tamaño del chunk en tiles
     public int visibleChunks = 2; // Cantidad de chunks visibles alrededor del jugador
     public int groundTileSize = 1; // Tamaño de cada tile de suelo
+    public int maxDecorationsPerChunk = 20; // Máximo número de decoraciones por chunk
 
     private Transform player; // Referencia al jugador
     private Dictionary<Vector2, GameObject> activeChunks = new Dictionary<Vector2, GameObject>();
@@ -18,9 +26,9 @@ public class ChunkManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
-        if (decorationPrefabs.Length != decorationWeights.Length)
+        if (decorations.Length == 0)
         {
-            Debug.LogError("La cantidad de decoraciones y pesos no coinciden.");
+            Debug.LogError("No hay decoraciones configuradas.");
             return;
         }
 
@@ -99,10 +107,11 @@ public class ChunkManager : MonoBehaviour
     private void GenerateDecorations(GameObject chunk, Vector2 chunkCoord)
     {
         HashSet<Vector2> occupiedPositions = new HashSet<Vector2>();
+        int decorationCount = 0;
 
-        for (int i = 0; i < chunkSize; i++)
+        for (int i = 0; i < chunkSize && decorationCount < maxDecorationsPerChunk; i++)
         {
-            for (int j = 0; j < chunkSize; j++)
+            for (int j = 0; j < chunkSize && decorationCount < maxDecorationsPerChunk; j++)
             {
                 Vector2 gridPosition = new Vector2(i, j);
 
@@ -117,14 +126,20 @@ public class ChunkManager : MonoBehaviour
                         0
                     );
 
-                    GameObject selectedDecoration = GetWeightedRandomDecoration();
+                    Decoration selectedDecoration = GetWeightedRandomDecoration();
 
                     // Si el objeto tiene una base amplia, reserva las posiciones cercanas
                     float baseSize = 1f; // Ajusta según el tamaño de la base del objeto
                     ReservePositions(occupiedPositions, gridPosition, baseSize);
 
-                    GameObject decoration = Instantiate(selectedDecoration, decorationPosition, Quaternion.identity);
+                    GameObject decoration = Instantiate(selectedDecoration.prefab, decorationPosition, Quaternion.identity);
                     decoration.transform.SetParent(chunk.transform);
+
+                    // Aplica un tamaño aleatorio dentro del rango definido
+                    float randomScale = Random.Range(selectedDecoration.minScale, selectedDecoration.maxScale);
+                    decoration.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
+
+                    decorationCount++; // Incrementa el contador de decoraciones
                 }
             }
         }
@@ -152,27 +167,27 @@ public class ChunkManager : MonoBehaviour
         );
     }
 
-    private GameObject GetWeightedRandomDecoration()
+    private Decoration GetWeightedRandomDecoration()
     {
         float totalWeight = 0f;
 
-        foreach (float weight in decorationWeights)
+        foreach (var deco in decorations)
         {
-            totalWeight += weight;
+            totalWeight += deco.weight;
         }
 
         float randomValue = Random.Range(0, totalWeight);
 
         float cumulativeWeight = 0f;
-        for (int i = 0; i < decorationPrefabs.Length; i++)
+        foreach (var deco in decorations)
         {
-            cumulativeWeight += decorationWeights[i];
+            cumulativeWeight += deco.weight;
             if (randomValue <= cumulativeWeight)
             {
-                return decorationPrefabs[i];
+                return deco;
             }
         }
 
-        return decorationPrefabs[decorationPrefabs.Length - 1];
+        return decorations[decorations.Length - 1];
     }
 }
